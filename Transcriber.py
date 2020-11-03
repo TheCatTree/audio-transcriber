@@ -23,7 +23,7 @@ with harvard as source:
     audio = r.record(source)
 
 # recognize speech using Google Cloud Speech
-g_cloud_json = open('{path}/Assets/ninth-archway-293722-0ebb76c3ed3e.json'.format(path=location))
+g_cloud_json = open('{path}/credentials/googlecloud.json'.format(path=location))
 GOOGLE_CLOUD_SPEECH_CREDENTIALS = json.dumps(json.load(g_cloud_json))
 
 try:
