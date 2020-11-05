@@ -16,6 +16,7 @@ Before you begin, ensure you have met the following requirements:
 <!--- These are just example requirements. Add, duplicate or remove as required --->
 * Python >= 3.6 installed.
 * Speech recognition library.
+* For mp3s, Pydub & ffmpeg
 
 ```
 ## Using Python Audio Transcriber
