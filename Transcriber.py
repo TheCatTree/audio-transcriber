@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 from pprint import pprint
+from pydub import AudioSegment
+from os import path
 import os
 import ntpath
 import sys
@@ -16,8 +18,18 @@ sound_name = ntpath.basename(sound_string)
 out_location = os.path.dirname(sound_string)
 
 print('Sound name', sound_name)
-
 r = sr.Recognizer()
+
+# Test for mp3
+name, extension = os.path.splitext(sound_name)
+print('File extension:', extension )
+
+if extension.lower() == ".mp3":
+    print("is a mp3")
+    temp_sound = AudioSegment.from_mp3(sound_location)
+    temp_sound.export("temp_mptowav.wav", format="wav")
+    sound_location = "temp_mptowav.wav"
+
 harvard = sr.AudioFile(sound_location)
 with harvard as source:
     audio = r.record(source)
