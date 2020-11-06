@@ -4,6 +4,7 @@ import os
 import ntpath
 import sys
 import json
+import concurrent.futures
 import speech_recognition as sr
 from pprint import pprint
 from pydub import AudioSegment
@@ -43,10 +44,10 @@ for i, chunk in enumerate(chunks):
     print ("exporting", chunk_name)
     chunk.export("{path}/temp/{name}".format(path=location,name=chunk_name), format="wav")
 
-all_text = []
 
-for i in range(len(chunks)):
-    harvard = sr.AudioFile("{path}/temp/chunk{number}.wav".format(path=location,number=i))
+
+def transcribe(chunk_id):
+    harvard = sr.AudioFile("{path}/temp/chunk{number}.wav".format(path=location,number=chunk_id))
     with harvard as source:
         audio = r.record(source)
 
@@ -57,17 +58,25 @@ for i in range(len(chunks)):
     try:
         print("Google Cloud Speech recognition results:")
         out = r.recognize_google_cloud(audio, credentials_json=GOOGLE_CLOUD_SPEECH_CREDENTIALS)  # pretty-print the recognition result
+        pprint("Chunk:{0} {1}".format(chunk_id, out))
         # out = r.recognize_google(audio)
     except sr.UnknownValueError:
         print("Google Cloud Speech could not understand audio")
     except sr.RequestError as e:
         print("Could not request results from Google Cloud Speech service; {0}".format(e))
 
-    pprint(out)
-    all_text.append(out)
+    
+    
+    return {
+        "idx": chunk_id,
+        "text": out
+    }
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+    all_text  = executor.map(transcribe, range(len(chunks)))
 
 transcript = ""
-for i, text in enumerate(all_text):
+for text in sorted(all_text, key=lambda  x:  x['idx']):
     transcript = transcript + "{0}".format(text)
 
 with open('{path}/{name}.rtf'.format(name=sound_name, path=out_location), 'w') as file_out: 
