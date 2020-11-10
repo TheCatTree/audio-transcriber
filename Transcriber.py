@@ -56,8 +56,8 @@ def transcribe(chunk_id):
     GOOGLE_CLOUD_SPEECH_CREDENTIALS = json.dumps(json.load(g_cloud_json))
 
     try:
-        print("Google Cloud Speech recognition results:")
         out = r.recognize_google_cloud(audio, credentials_json=GOOGLE_CLOUD_SPEECH_CREDENTIALS)  # pretty-print the recognition result
+        pprint("Google Cloud Speech recognition results chunk {0}:".format(chunk_id))
         pprint("Chunk:{0} {1}".format(chunk_id, out))
         # out = r.recognize_google(audio)
     except sr.UnknownValueError:
